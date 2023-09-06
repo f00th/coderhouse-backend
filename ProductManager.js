@@ -10,32 +10,36 @@ class ProductManager {
     
     getProduct() {
         console.log('Array of products\n');
-        console.log(this.product);
         return this.product;
     }
 
     getProductById(id) {
-        const object = this.product.find(obj => obj.id === id);
+        let object = this.product.find(obj => obj.id === id);
         if (object === undefined) {
             console.log('Not found\n');
+            object = 'Not found';
         } else {
             console.log('Product found:\n');
-            console.log(object);
         }
-        return this.product;
+        return object;
     }
 
     deleteProductById(id) {
         let index = this.product.findIndex(obj => obj.id === id);
-        this.product.splice(index, 1);
-        const productString = JSON.stringify(this.product);
-        fs.writeFileSync("product.json", productString);
-        console.log('Product deleted succesfully\n');
+        if (index !== undefined && index !== -1) {
+            this.product.splice(index, 1);
+            const productString = JSON.stringify(this.product);
+            fs.writeFileSync("product.json", productString);
+            console.log('Product deleted succesfully\n');
+        } else {
+            console.log("Not found delete\n")
+        }
+        return this.product;
     }
 
     modifyProductById(id, title, description, price, thumbnail, code, stock) {
         let index = this.product.findIndex(obj => obj.id === id);
-        const object = {
+        const obj = {
             id,
             title,
             description,
@@ -44,7 +48,7 @@ class ProductManager {
             code,
             stock
         }
-        this.product[index] = object;
+        this.product[index] = obj;
         const productString = JSON.stringify(this.product);
         fs.writeFileSync("product.json", productString);
         return this.product;
@@ -54,9 +58,8 @@ class ProductManager {
         const object = this.product.find(obj => obj.code === code);
 
         // ID counter
-        let id = Math.max(...this.product.map(o => o.id));
-        id = id + 1;
-        console.log(id);
+        let id = Math.max(...this.product.map(obj => obj.id));
+        id++;
         if (this.product.length === 0)
             id = 0
 
@@ -82,25 +85,14 @@ class ProductManager {
     }
 }
 
+/*
 const products = new ProductManager;
 
 // Adding products
 products.addProduct('table', 'dinner', 100, 'none', 'a', 10);
 products.addProduct('chair', 'office', 50, 'none', 'b', 5);
-// Adding product with code already in use
-products.addProduct('bed', 'king', 200, 'none', 'b', 15);
-
 products.addProduct('couch', 'single', 200, 'none', 'c', 15);
 products.addProduct('wardrobe', 'wood', 200, 'none', 'd', 15);
+*/
 
-// Array of products
-products.getProduct();
-// Search by ID
-products.getProductById(1);
-products.getProductById(0);
-// Delete by ID
-products.deleteProductById(1);
-// Modify product by ID
-products.modifyProductById(3,'a',1,1,1,1,1);
-products.getProductById(3);
-
+module.exports.ProductManager = ProductManager;
